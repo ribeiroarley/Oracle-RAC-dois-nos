@@ -1,0 +1,32 @@
+# ==============================================================================
+# Oracle Grid Infrastructure 19c Silent Installation Response File
+# ==============================================================================
+oracle.install.responseFileVersion=/oracle/install/rspfmt_crsinstall_response_schema_v19.0.0
+INVENTORY_LOCATION=/u01/app/oraInventory
+oracle.install.option=CRS_CONFIG
+ORACLE_BASE=/u01/app/grid
+oracle.install.asm.OSDBA=asmdba
+oracle.install.asm.OSOPER=asmoper
+oracle.install.asm.OSASM=asmadmin
+oracle.install.crs.config.scanType=LOCAL_SCAN
+oracle.install.crs.config.gpnp.scanName=rac-scan.localdomain
+oracle.install.crs.config.gpnp.scanPort=1521
+oracle.install.crs.config.ClusterConfiguration=STANDALONE
+oracle.install.crs.config.configureAsExtendedCluster=false
+oracle.install.crs.config.clusterName=rac-cluster
+oracle.install.crs.config.gpnp.configureGNS=false
+oracle.install.crs.config.autoConfigureClusterNodeVIP=false
+oracle.install.crs.config.clusterNodes=racnode1:racnode1-vip,racnode2:racnode2-vip
+oracle.install.crs.config.networkInterfaceList=eth0:10.0.2.0:3,eth1:192.168.56.0:1,eth2:192.168.10.0:5
+oracle.install.crs.configureGIMR=false
+oracle.install.crs.config.storageOption=FLEX_ASM_STORAGE
+oracle.install.crs.config.useIPMI=false
+oracle.install.asm.SYSASMPassword=Oracle_19c_RAC
+oracle.install.asm.diskGroup.name=CRS
+oracle.install.asm.diskGroup.redundancy=NORMAL
+oracle.install.asm.diskGroup.AUSize=4
+oracle.install.asm.diskGroup.disks=/dev/oracleasm/disks/asm-crs01,/dev/oracleasm/disks/asm-crs02,/dev/oracleasm/disks/asm-crs03
+oracle.install.asm.diskGroup.diskDiscoveryString=/dev/oracleasm/disks/*
+oracle.install.asm.monitorPassword=Oracle_19c_RAC
+oracle.install.asm.configureAFD=false
+oracle.install.crs.rootconfig.executeRootScript=false

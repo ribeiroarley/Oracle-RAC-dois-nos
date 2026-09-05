@@ -1,0 +1,33 @@
+# Vagrant
+.vagrant/
+*.vdi
+*.vmdk
+*.box
+*.iso
+.asm_storage/
+asm_storage/
+
+# Oracle Installation Archives and Staging
+software/
+*.zip
+V982063-01.zip
+V982068-01.zip
+LINUX.X64_*.zip
+/tmp/
+
+# Logs, Traces and Dumps
+*.log
+*.trc
+*.trm
+*.out
+*.err
+
+# SSH Keys and Credentials
+.ssh_keys/
+*private_key*
+id_rsa
+id_rsa.pub
+
+# Temporary artifacts and screenshots
+*.png
+scratch/
