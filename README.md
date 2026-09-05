@@ -177,20 +177,40 @@ Coloque os arquivos compactados na pasta `software/` na raiz do projeto:
 vagrant up
 ```
 
-### 3. Desligamento e Religamento Seguro do Cluster
+### 3. Desligamento Gracioso e Ordenado (Procedimento Recomendado)
 
-Para manter a consistência dos discos ASM e dos voting disks ao reiniciar o host:
+Para garantir a integridade dos blocos de dados no ASM, dos voting disks e dos metadados do Clusterware, execute o desligamento na seguinte ordem obrigatória:
 
+#### 1. Parar o Banco de Dados e Serviços (via nó 1)
 ```powershell
-# Desligamento Gracioso (Recomendado)
-# Primeiro desliga racnode2, depois racnode1:
+vagrant ssh racnode1 -- -t "sudo su - oracle -c 'srvctl stop database -d orcl -o immediate'"
+```
+
+#### 2. Desativar a Pilha do Clusterware (CRS) em Ambos os Nós
+```powershell
+# No racnode2 primeiro:
+vagrant ssh racnode2 -- -t "sudo /u01/app/19.0.0/grid/bin/crsctl stop crs -f"
+
+# No racnode1 em seguida:
+vagrant ssh racnode1 -- -t "sudo /u01/app/19.0.0/grid/bin/crsctl stop crs -f"
+```
+
+#### 3. Desligar as Máquinas Virtuais no Vagrant
+```powershell
 vagrant halt racnode2
 vagrant halt racnode1
+```
 
-# Inicialização (Primeiro racnode1, depois racnode2):
+### 4. Inicialização Segura do Cluster
+Ao reiniciar o laboratório, inicie os nós na ordem canônica para remontagem automática da stack:
+```powershell
+# Primeiro racnode1 (Master inicial do CRS/ASM):
 vagrant up racnode1 --no-provision
+
+# Em seguida racnode2:
 vagrant up racnode2 --no-provision
 ```
+
 
 ---
 
@@ -242,4 +262,5 @@ EXIT;
 
 ---
 ⭐ Se este projeto te ajudou a entender ou provisionar um ambiente Oracle RAC 19c no Oracle Linux 9, deixe uma estrela no repositório!
+
 
