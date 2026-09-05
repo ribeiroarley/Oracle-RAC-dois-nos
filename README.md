@@ -43,7 +43,7 @@ graph TD
 
         VM1 --- Storage
         VM2 --- Storage
-        CRS1 <-->|Cluster Interconnect HAIP| CRS2
+        CRS1 <-->|Cluster Interconnect HAIP (192.168.10.x)| CRS2
     end
 ```
 
@@ -172,3 +172,16 @@ SELECT inst_id, instance_name, host_name, status, startup_time FROM gv$instance;
 SELECT name, open_mode FROM v$pdbs;
 EXIT;
 ```
+
+---
+
+## 👤 Autor
+
+**Arley Ribeiro**  
+👨💻 Técnico em Informática | Suporte, Banco de Dados & SQL
+
+- **LinkedIn:** [linkedin.com/in/ribeiroarley](https://www.linkedin.com/in/ribeiroarley/)
+- **GitHub:** [github.com/ribeiroarley](https://github.com/ribeiroarley)
+
+---
+⭐ Se este projeto te ajudou a entender ou provisionar um ambiente Oracle RAC 19c no Oracle Linux 9, deixe uma estrela no repositório!
