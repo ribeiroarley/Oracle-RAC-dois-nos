@@ -49,19 +49,19 @@ graph TD
 
 ---
 
-## 📸 Evidências Operacionais e Validação Visual
+## 📸 Evidências de Execução / Validação
 
-### 1. Instâncias RAC e Pluggable Database Conectados (`GV$INSTANCE` & `GV$PDBS`)
-Consulta confirmando instâncias `orcl1` e `orcl2` em modo `OPEN` e o PDB `ORCLPDB` em `READ WRITE` ativo nos dois nós:
-![Instâncias RAC Conectadas](docs/img/rac_gv_instance.png)
+### 1. Status Consolidado do Clusterware e Banco (`crsctl stat res -t`)
+Evidência dos recursos do clusterware, instâncias `orcl1` e `orcl2`, diskgroups ASM (`+CRS`, `+DATA`, `+RECO`), VIPs e listeners com status `ONLINE` e `STABLE`:
+![Status do Clusterware](docs/img/01_cluster_crsctl_status.png)
 
-### 2. Recursos do Clusterware 19c Online (`crsctl stat res -t`)
-Evidência dos serviços de instâncias, diskgroups ASM (`+CRS`, `+DATA`, `+RECO`), VIPs e Listeners:
-![Status do Cluster RAC](docs/img/cluster_status.png)
+### 2. Instâncias Ativas no Cluster e PDB Read-Write (`GV$INSTANCE` & `GV$PDBS`)
+Consulta no SQL*Plus conectando no cluster e comprovando as instâncias em modo `OPEN` simultaneamente no `racnode1` e `racnode2`, além do PDB `ORCLPDB` em `READ WRITE`:
+![Instâncias Ativas GV$INSTANCE](docs/img/02_rac_gv_instance.png)
 
-### 3. Saúde Geral do Cluster e Status do Banco via `srvctl`
-Validação de integridade do cluster e gerenciamento das instâncias pelo Cluster Ready Services:
-![Saúde do Banco e Cluster](docs/img/db_and_cluster_health.png)
+### 3. Diskgroups ASM e Voting Disks Registrados (`asmcmd lsdg` & `votedisk`)
+Evidência do armazenamento ASM e dos 3 voting disks gravados no diskgroup `+CRS`:
+![Diskgroups ASM](docs/img/03_asm_storage_lsdg.png)
 
 ---
 
