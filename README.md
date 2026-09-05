@@ -49,6 +49,47 @@ graph TD
 
 ---
 
+## ⚙️ Especificações das Máquinas Virtuais e Orquestração Vagrant
+
+A infraestrutura como código (IaC) é definida inteiramente no arquivo `Vagrantfile`, permitindo a criação reprodutível do ambiente:
+
+### 1. Especificações de Hardware & Hypervisor
+- **Box Base:** `oraclelinux/9` (Oracle Linux 9 Oficial - UEK7 x86_64).
+- **Provedor:** VirtualBox (`virtualbox`).
+- **Recursos por Máquina:**
+  - **RAM:** `6144 MB` (6 GB por nó / 12 GB dedicados no host).
+  - **vCPUs:** `2 vCPUs` por máquina virtual.
+  - **Swap Linux:** `4096 MB` (4 GB) por nó para absorver picos de I/O na linkagem e startup.
+  - **Promiscuous Mode:** `allow-all` em todas as interfaces de rede do cluster para tráfego VIP/SCAN.
+
+### 2. Arquitetura de Rede Multi-Homed por VM
+Cada máquina virtual é provisionada com 3 placas de rede distintas:
+1. **Interface 1 (`eth0` - NAT):** Gerenciamento do Vagrant, encaminhamento de portas SSH e acesso externo à internet para download de pacotes.
+2. **Interface 2 (`eth1` - Host-Only `192.168.56.x`):** Rede pública do cluster utilizada pelos IPs fixos dos nós, pelos Virtual IPs (VIPs), pelo Single Client Access Name (SCAN) e por clientes externos (SQL Developer, DBeaver, aplicações).
+3. **Interface 3 (`eth2` - Internal Network `rac_priv_net` `192.168.10.x`):** Rede isolada de altíssima velocidade do VirtualBox dedicada exclusivamente para o Cluster Interconnect, sincronismo de blocos (Cache Fusion) e High Availability IP (HAIP).
+
+### 3. Armazenamento Compartilhado no VirtualBox (SCSI Shareable)
+O Oracle ASM requer que os mesmos discos físicos/virtuais sejam acessíveis simultaneamente por todos os nós sem travamento exclusivo do sistema operacional hospedeiro:
+- Criação no diretório `.asm_storage/` de 5 discos virtuais com o tipo `shareable` (`--type shareable` via `VBoxManage createmedium` ou `storageattach`).
+- Uma controladora SCSI dedicada é utilizada para o anexo simultâneo sem retenção de lock:
+  * `asm-crs01.vdi` (5 GB)
+  * `asm-crs02.vdi` (5 GB)
+  * `asm-crs03.vdi` (5 GB)
+  * `asm-data01.vdi` (30 GB)
+  * `asm-reco01.vdi` (20 GB)
+
+### 4. Ciclo de Vida do Ambiente via Vagrant
+| Comando | Descrição |
+| :--- | :--- |
+| `vagrant up` | Cria, configura discos compartilhados e inicializa os nós |
+| `vagrant ssh racnode1` | Acesso SSH direto ao nó 1 como usuário `vagrant` |
+| `vagrant ssh racnode2` | Acesso SSH direto ao nó 2 como usuário `vagrant` |
+| `vagrant halt` | Desligamento gracioso das máquinas virtuais |
+| `vagrant reload` | Reinicia as VMs aplicando eventuais novas diretivas do `Vagrantfile` |
+| `vagrant status` | Exibe o status atual de execução de cada nó do cluster |
+
+---
+
 ## 📸 Evidências de Execução / Validação
 
 ### 1. Status Consolidado do Clusterware e Banco (`crsctl stat res -t`)
