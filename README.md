@@ -11,7 +11,7 @@ Ambiente de automação completa para provisionamento, configuração e orquestr
 - **Oracle Grid Infrastructure:** 19c (19.3.0.0.0 Enterprise Edition)
 - **Oracle Database (RDBMS):** 19c (19.3.0.0.0 Enterprise Edition Multitenant)
 - **Container Database (CDB):** `orcl` (Instâncias ativas: `orcl1` no Nó 1, `orcl2` no Nó 2)
-- **Pluggable Database (PDB):** `orclpdb`
+- **Pluggable Database (PDB):** `orclpdb` (Status: `READ WRITE` em ambos os nós)
 - **Gerenciamento de Armazenamento:** Oracle ASM com regras persistentes UDEV
 
 ```mermaid
@@ -46,6 +46,22 @@ graph TD
         CRS1 <-->|Cluster Interconnect HAIP (192.168.10.x)| CRS2
     end
 ```
+
+---
+
+## 📸 Evidências Operacionais e Validação Visual
+
+### 1. Instâncias RAC e Pluggable Database Conectados (`GV$INSTANCE` & `GV$PDBS`)
+Consulta confirmando instâncias `orcl1` e `orcl2` em modo `OPEN` e o PDB `ORCLPDB` em `READ WRITE` ativo nos dois nós:
+![Instâncias RAC Conectadas](docs/img/rac_gv_instance.png)
+
+### 2. Recursos do Clusterware 19c Online (`crsctl stat res -t`)
+Evidência dos serviços de instâncias, diskgroups ASM (`+CRS`, `+DATA`, `+RECO`), VIPs e Listeners:
+![Status do Cluster RAC](docs/img/cluster_status.png)
+
+### 3. Saúde Geral do Cluster e Status do Banco via `srvctl`
+Validação de integridade do cluster e gerenciamento das instâncias pelo Cluster Ready Services:
+![Saúde do Banco e Cluster](docs/img/db_and_cluster_health.png)
 
 ---
 
@@ -169,7 +185,7 @@ sudo su - oracle -c "sqlplus / as sysdba"
 ```sql
 SET LINESIZE 200 COLSEP '|';
 SELECT inst_id, instance_name, host_name, status, startup_time FROM gv$instance;
-SELECT name, open_mode FROM v$pdbs;
+SELECT inst_id, con_id, name, open_mode FROM gv$pdbs WHERE name = 'ORCLPDB';
 EXIT;
 ```
 

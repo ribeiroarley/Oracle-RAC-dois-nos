@@ -30,4 +30,5 @@ id_rsa.pub
 
 # Temporary artifacts and screenshots
 *.png
+!docs/img/*.png
 scratch/
