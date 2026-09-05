@@ -231,14 +231,16 @@ vagrant halt racnode2
 vagrant halt racnode1
 ```
 
-### 4. Inicialização Segura do Cluster
-Ao reiniciar o laboratório, inicie os nós na ordem canônica para remontagem automática da stack:
-```powershell
-# Primeiro racnode1 (Master inicial do CRS/ASM):
-vagrant up racnode1 --no-provision
+### 4. Inicialização Segura e Validação do Cluster (Religamento)
+Ao reiniciar o laboratório, inicie os nós na ordem canônica para remontagem automática da stack e valide os recursos diretamente pelo host:
 
-# Em seguida racnode2:
+```powershell
+# 1. Subir o cluster (nó 1 primeiro, depois nó 2):
+vagrant up racnode1 --no-provision
 vagrant up racnode2 --no-provision
+
+# 2. Conectar via SSH inline e validar o status dos recursos:
+vagrant ssh racnode1 -- -t "sudo su - grid -c 'crsctl stat res -t'"
 ```
 
 
