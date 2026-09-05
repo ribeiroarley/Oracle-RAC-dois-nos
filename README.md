@@ -132,6 +132,36 @@ Os discos virtuais são configurados como SCSI compartilhados (`shareable`) e ma
 
 ---
 
+## 🔌 Conectividade Externa e Mapeamento de Hosts (Windows / Linux)
+
+Para conectar ferramentas como **Oracle SQL Developer**, **DBeaver**, **DataGrip** ou aplicações a partir da máquina hospedeira (Windows), adicione as seguintes entradas no arquivo `hosts`:
+
+* **Windows:** `C:\Windows\System32\drivers\etc\hosts` (executar editor como Administrador)
+* **Linux / macOS:** `/etc/hosts` (com `sudo`)
+
+```text
+# Oracle RAC 19c - Laboratório VirtualBox
+192.168.56.11   racnode1.localdomain   racnode1
+192.168.56.12   racnode2.localdomain   racnode2
+192.168.56.21   racnode1-vip.localdomain racnode1-vip
+192.168.56.22   racnode2-vip.localdomain racnode2-vip
+192.168.56.31   rac-scan.localdomain   rac-scan
+192.168.56.32   rac-scan.localdomain   rac-scan
+192.168.56.33   rac-scan.localdomain   rac-scan
+```
+
+### Parâmetros de Conexão Recomendados (JDBC / TNS)
+
+| Parâmetro | Pluggable Database (Recomendado) | Container Database (Root) |
+| :--- | :--- | :--- |
+| **Hostname / Host** | `rac-scan.localdomain` (ou `192.168.56.31`) | `rac-scan.localdomain` (ou `192.168.56.31`) |
+| **Porta** | `1521` | `1521` |
+| **Service Name** | `orclpdb.localdomain` (ou `orclpdb`) | `orcl.localdomain` (ou `orcl`) |
+| **Usuário** | `system` / `sys as sysdba` / usuário do PDB | `system` / `sys as sysdba` |
+| **JDBC String** | `jdbc:oracle:thin:@//rac-scan.localdomain:1521/orclpdb` | `jdbc:oracle:thin:@//rac-scan.localdomain:1521/orcl` |
+
+---
+
 ## 💻 Pré-requisitos de Hardware e Software
 
 - **Sistema Operacional do Host:** Windows 10/11 x64 ou Linux x86_64
