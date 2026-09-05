@@ -52,14 +52,20 @@ def format_inline(text):
     # Escape XML chars first
     text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     
+    # Protect inline code blocks first using placeholders
+    code_tokens = []
+    def code_repl(m):
+        code_tokens.append(m.group(1))
+        return f"___CODE_TOKEN_{len(code_tokens)-1}___"
+    
+    text = re.sub(r'`(.*?)`', code_repl, text)
+    
     # Bold + Italic: ***text***
     text = re.sub(r'\*\*\*(.*?)\*\*\*', r'<b><i>\1</i></b>', text)
     # Bold: **text**
     text = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', text)
     # Italic: *text*
     text = re.sub(r'(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)', r'<i>\1</i>', text)
-    # Inline code: `code`
-    text = re.sub(r'`(.*?)`', r'<font name="Courier" color="#b31d28" size="8"><b>\1</b></font>', text)
     
     # Links
     def repl_link(m):
@@ -69,6 +75,12 @@ def format_inline(text):
         return f'<font color="#0f2d59"><b>{label}</b></font>'
     
     text = re.sub(r'\[(.*?)\]\((.*?)\)', repl_link, text)
+    
+    # Restore code tokens
+    for idx, code_val in enumerate(code_tokens):
+        formatted_code = f'<font name="Courier" color="#b31d28" size="8"><b>{code_val}</b></font>'
+        text = text.replace(f"___CODE_TOKEN_{idx}___", formatted_code)
+    
     return text
 
 

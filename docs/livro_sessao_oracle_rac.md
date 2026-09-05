@@ -233,19 +233,47 @@ Todos os recursos (`ora.LISTENER.lsnr`, `ora.CRS.dg`, `ora.DATA.dg`, `ora.RECO.d
 
 ---
 
-## 8. Governança Git e Procedimento de Desligamento Gracioso
+## 8. Ciclo de Vida do Cluster, Operação e Governança Git
 
-### Governança no `.gitignore`
-Para manter o repositório leve e seguro:
-- Discos `.vdi`, pastas `.vagrant/` e `.asm_storage/` foram ignorados.
-- Instaladores e arquivos `.zip` oficiais da Oracle foram excluídos.
-- Imagens de documentação foram explicitamente permitidas apenas no diretório `docs/img/`.
+### 1. Governança no `.gitignore`
+Para manter o repositório leve, seguro e em conformidade:
+- Discos virtuais (`*.vdi`, `*.vmdk`), pastas `.vagrant/` e `.asm_storage/` foram estritamente excluídos.
+- Instaladores e arquivos binários compactados da Oracle (`software/`, `*.zip`) foram ignorados.
+- Logs e dumps transitórios (`*.log`, `*.trc`, `*.trm`) foram removidos do rastreamento.
+- Evidências gráficas foram centralizadas e permitidas apenas em `docs/img/`.
 
-### Procedimento de Desligamento Seguro
-Para evitar corrupção no ASM e nos voting disks ao desligar o laboratório:
-1. `srvctl stop database -d orcl -o immediate`
-2. `crsctl stop crs -f` no `racnode2` e depois no `racnode1`
-3. `vagrant halt racnode2` e `vagrant halt racnode1`
+### 2. Procedimento de Inicialização Segura (Cold Start)
+Ao iniciar o ambiente com as VMs desligadas:
+1. `vagrant up racnode1 --no-provision` (Inicializa o nó master, discos compartilhados e serviços CRS/ASM).
+2. `vagrant up racnode2 --no-provision` (Adiciona o nó secundário ao cluster e ingressa na comunicação Interconnect).
+3. Validação inline: `vagrant ssh racnode1 -- -t "sudo su - grid -c 'crsctl stat res -t'"`
+
+### 3. Procedimento de Reinicialização Controlada (Reboot dos Nós)
+Para testar a resiliência do Clusterware e a persistência das regras UDEV:
+1. Reiniciar o nó 2: `vagrant reload racnode2 --no-provision`
+2. Reiniciar o nó 1: `vagrant reload racnode1 --no-provision`
+3. Após a convergência da stack, todos os recursos (`ora.orcl.db`, VIPs, SCAN e ASM) restabelecem automaticamente o status `ONLINE`.
+
+### 4. Procedimento de Desligamento Gracioso (Graceful Shutdown)
+Para prevenir corrupção no ASM, nos blocos do OCR e nos voting disks:
+1. Parada do Banco de Dados Multitenant:
+   ```bash
+   vagrant ssh racnode1 -- -t "sudo su - oracle -c 'srvctl stop database -d orcl -o immediate'"
+   ```
+2. Parada do Clusterware (CRS) em cascata:
+   ```bash
+   vagrant ssh racnode2 -- -t "sudo su - root -c '/u01/app/19.0.0/grid/bin/crsctl stop crs -f'"
+   vagrant ssh racnode1 -- -t "sudo su - root -c '/u01/app/19.0.0/grid/bin/crsctl stop crs -f'"
+   ```
+3. Desligamento das Máquinas Virtuais:
+   ```bash
+   vagrant halt racnode2
+   vagrant halt racnode1
+   ```
+4. Confirmação do estado no hypervisor:
+   ```bash
+   vagrant status
+   ```
 
 ---
 
