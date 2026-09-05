@@ -43,7 +43,7 @@ graph TD
 
         VM1 --- Storage
         VM2 --- Storage
-        CRS1 <-->|Cluster Interconnect HAIP (192.168.10.x)| CRS2
+        CRS1 <-->|"Cluster Interconnect HAIP (192.168.10.x)"| CRS2
     end
 ```
 
@@ -242,3 +242,4 @@ EXIT;
 
 ---
 ⭐ Se este projeto te ajudou a entender ou provisionar um ambiente Oracle RAC 19c no Oracle Linux 9, deixe uma estrela no repositório!
+
