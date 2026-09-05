@@ -44,6 +44,10 @@ Este documento relata as etapas de engenharia, os obstáculos enfrentados e as s
 
 Para garantir a reproducibilidade total do cluster, o provisionamento foi automatizado via HashiCorp Vagrant acoplado ao Oracle VirtualBox.
 
+### Extensões do Hypervisor e Plugins do Orquestrador
+- **VirtualBox Extension Pack:** Pré-requisito mandatório instalado no host na mesma versão do VirtualBox. Fornece o backend de emulação para barramentos NVMe, controladoras SCSI avançadas e recursos compartilhados essenciais para que o VirtualBox gerencie discos com o descritor `shareable` sem causar locks exclusivos no sistema de arquivos hospedeiro.
+- **Plugin Vagrant `vagrant-vbguest`:** Recomendado para sincronizar automaticamente as *VirtualBox Guest Additions* dentro do ambiente Oracle Linux 9 (UEK7 / Kernel 6.12), mantendo a compatibilidade dos módulos de integração do kernel com o hipervisor.
+
 ### Topologia Multi-Homed por VM
 
 Cada nó do cluster conta com 3 adaptadores de rede físicos/virtuais:
@@ -70,9 +74,9 @@ Cada nó do cluster conta com 3 adaptadores de rede físicos/virtuais:
 
 O Oracle ASM exige que todos os nós do cluster tenham acesso de leitura e escrita simultâneo aos mesmos blocos de disco físico.
 
-### Criação dos Discos Compartilhados (VirtualBox)
+### Criação dos Discos Compartilhados (VirtualBox + Extension Pack)
 
-No `Vagrantfile`, os discos foram definidos no diretório `.asm_storage/` com o atributo `shareable` acoplados a uma controladora SCSI independente, eliminando o bloqueio de arquivo no host Windows.
+No `Vagrantfile`, os discos foram definidos no diretório `.asm_storage/` com o atributo `shareable` acoplados a uma controladora SCSI independente, eliminando o bloqueio de arquivo no host Windows graças às primitivas de I/O providas pelo VirtualBox Extension Pack.
 
 ### Diskgroups ASM Criados
 

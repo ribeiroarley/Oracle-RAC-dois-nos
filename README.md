@@ -165,8 +165,18 @@ Para conectar ferramentas como **Oracle SQL Developer**, **DBeaver**, **DataGrip
 ## 💻 Pré-requisitos de Hardware e Software
 
 - **Sistema Operacional do Host:** Windows 10/11 x64 ou Linux x86_64
-- **Hypervisor:** Oracle VirtualBox 7.0+
+- **Hypervisor:** Oracle VirtualBox 7.0+ (ou superior)
+- **VirtualBox Extension Pack:** Obrigatório na mesma versão exata do VirtualBox instalado. Fornece suporte avançado a controladoras SCSI compartilhadas (`shareable`), emulação NVMe/USB e passagem de instruções sem bloqueio de arquivos no host.
+  ```powershell
+  # Instalação no host via VBoxManage:
+  VBoxManage extpack install --replace <Oracle_VM_VirtualBox_Extension_Pack-7.x.x.vbox-extpack>
+  ```
 - **Orquestrador:** HashiCorp Vagrant 2.3+
+- **Plugins Vagrant Recomendados:**
+  * `vagrant-vbguest`: Mantém o *VirtualBox Guest Additions* sincronizado automaticamente com o Kernel UEK7 do Oracle Linux 9 nas VMs.
+  ```powershell
+  vagrant plugin install vagrant-vbguest
+  ```
 - **Memória RAM Host Recomendada:** Mínimo de 16 GB livres (recomendado 32 GB no host para estabilidade de I/O)
 - **Recursos por VM:**
   - **RAM:** 6144 MB (6 GB) por nó
